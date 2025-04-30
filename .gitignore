@@ -1,0 +1,38 @@
+# =============== #
+# Unity generated #
+# =============== #
+[Ll]ibrary/
+[Tt]emp/
+[Tt]argets/
+[Aa]ssets/AssetStoreTools*
+.*/Editor/
+.*/Tests/
+
+# ================ #
+# User-specific files #
+# ================ #
+# User-specific files
+[Dd]ebug/
+[Dd]ebugPublic/
+[Dd]ebugTests/
+
+# ================ #
+# Build directories #
+# ================ #
+/[Ll]og/
+[Ll]ogs/
+
+# ================ #
+# OS generated files #
+# ================ #
+# Windows
+Thumbs.db
+ehthumbs.db
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux
+.directory
