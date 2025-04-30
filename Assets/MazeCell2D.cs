@@ -7,16 +7,19 @@ using UnityEngine.Tilemaps;
 public class MazeCell2D : MonoBehaviour
 {
     [SerializeField]
-    private GameObject leftWall;
+    public GameObject leftWall;
 
     [SerializeField]
-    private GameObject rightWall;
+    public GameObject rightWall;
 
     [SerializeField]
-    private GameObject frontWall;
+    public GameObject frontWall;
 
     [SerializeField]
-    private GameObject backWall;
+    public GameObject backWall;
+
+    [SerializeField]
+    public GameObject tfCenter;
 
     [SerializeField]
     private GameObject unvistedBlock;
