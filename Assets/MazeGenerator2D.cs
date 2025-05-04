@@ -107,7 +107,7 @@ public class MazeGenerator2D : MonoBehaviour
         else if (difficulty == Difficulty.Medium)
         {
             // Aldous-Broder
-            if(mazeWidth<11 && mazeHeight < 9)
+            if(mazeWidth<100 && mazeHeight <100)
             {
                 StartCoroutine(GenerateMaze_AB());
             }
@@ -614,7 +614,7 @@ public class MazeGenerator2D : MonoBehaviour
         while (!(player_x == (mazeWidth - 1) && player_y == 0))
         {
             if(watchHumanEvaluation)
-                yield return new WaitForSeconds(0.1f);
+                yield return new WaitForSeconds(waitSeconds);
 
             // Reset wall flags
             for (int i = 0; i < 4; i++) freeWalls[i] = false;
@@ -723,29 +723,36 @@ public class MazeGenerator2D : MonoBehaviour
                         // in any other case, go to the cell that was less visited and that has freeWalls
                         // get cell less visited
 
-                        int[] visited_weights = new int[] { 100000, 100000, 100000, 100000 }; // 0 left, 1 right, 2 top, 3 down
+                        // index for each direction, previous: 0 left, 1 right, 2 top, 3 down
+                        int ri = 0;     // right index
+                        int di = 1;     // down index
+                        int ti = 2;      // top index
+                        int li = 3;     // left index
+
+                        int[] visited_weights = new int[] { 100000, 100000, 100000, 100000 }; 
 
                         if (freeWalls[1]) // right
                         {
-                            visited_weights[1] = visited[player_x + 1, player_y];
+                            visited_weights[ri] = visited[player_x + 1, player_y];
                         }
                         
                         if (freeWalls[3]) // down
                         {
-                            visited_weights[3] = visited[player_x, player_y - 1];
+                            visited_weights[di] = visited[player_x, player_y - 1];
                         }
 
                         if (freeWalls[0]) // left
                         {
-                            visited_weights[0] = visited[player_x - 1, player_y];
+                            visited_weights[li] = visited[player_x - 1, player_y];
                         }
 
-                        if (freeWalls[2]) // up
+                        if (freeWalls[2]) // top
                         {
-                            visited_weights[2] = visited[player_x, player_y + 1];
+                            visited_weights[ti] = visited[player_x, player_y + 1];
                         }
 
                         // Get index of the smaller weight
+
                         int minIndex = 0;
                         int minValue = visited_weights[0];
 
@@ -760,28 +767,28 @@ public class MazeGenerator2D : MonoBehaviour
 
                         // Go to the cell with smaller weight
 
-                        if (minIndex==1)
+                        if (minIndex==ri)
                         {
                             // move right
                             player_x++;
                             prevDir = 0; // prev pos to the left
                             totalSteps++;
                         }
-                        else if (minIndex == 3)
+                        else if (minIndex == di)
                         {
-                            // move back
+                            // move down
                             player_y--;
                             prevDir = 2; // prev pos to the front
                             totalSteps++;
                         }
-                        else if (minIndex == 2)
+                        else if (minIndex == ti)
                         {
-                            // move front 
+                            // move top 
                             player_y++;
                             prevDir = 3; // prev pos to the back
                             totalSteps++;
                         }
-                        else if (minIndex == 0)
+                        else if (minIndex == li)
                         {
                             // move left
                             player_x--;
@@ -987,29 +994,36 @@ public class MazeGenerator2D : MonoBehaviour
                         // in any other case, go to the cell that was less visited and that has freeWalls
                         // get cell less visited
 
-                        int[] visited_weights = new int[] { 100000, 100000, 100000, 100000 }; // 0 left, 1 right, 2 top, 3 down
+                        // index for each direction, previous: 0 left, 1 right, 2 top, 3 down
+                        int ri = 0;     // right index
+                        int di = 1;     // down index
+                        int ti = 2;      // top index
+                        int li = 3;     // left index
+
+                        int[] visited_weights = new int[] { 100000, 100000, 100000, 100000 };
 
                         if (freeWalls[1]) // right
                         {
-                            visited_weights[1] = visited[player_x + 1, player_y];
+                            visited_weights[ri] = visited[player_x + 1, player_y];
                         }
 
                         if (freeWalls[3]) // down
                         {
-                            visited_weights[3] = visited[player_x, player_y - 1];
+                            visited_weights[di] = visited[player_x, player_y - 1];
                         }
 
                         if (freeWalls[0]) // left
                         {
-                            visited_weights[0] = visited[player_x - 1, player_y];
+                            visited_weights[li] = visited[player_x - 1, player_y];
                         }
 
-                        if (freeWalls[2]) // up
+                        if (freeWalls[2]) // top
                         {
-                            visited_weights[2] = visited[player_x, player_y + 1];
+                            visited_weights[ti] = visited[player_x, player_y + 1];
                         }
 
                         // Get index of the smaller weight
+
                         int minIndex = 0;
                         int minValue = visited_weights[0];
 
@@ -1024,28 +1038,28 @@ public class MazeGenerator2D : MonoBehaviour
 
                         // Go to the cell with smaller weight
 
-                        if (minIndex == 1)
+                        if (minIndex == ri)
                         {
                             // move right
                             player_x++;
                             prevDir = 0; // prev pos to the left
                             totalSteps++;
                         }
-                        else if (minIndex == 3)
+                        else if (minIndex == di)
                         {
-                            // move back
+                            // move down
                             player_y--;
                             prevDir = 2; // prev pos to the front
                             totalSteps++;
                         }
-                        else if (minIndex == 2)
+                        else if (minIndex == ti)
                         {
-                            // move front 
+                            // move top 
                             player_y++;
                             prevDir = 3; // prev pos to the back
                             totalSteps++;
                         }
-                        else if (minIndex == 0)
+                        else if (minIndex == li)
                         {
                             // move left
                             player_x--;
@@ -1053,7 +1067,7 @@ public class MazeGenerator2D : MonoBehaviour
                             totalSteps++;
                         }
 
-                        Debug.Log("Else 2 walls");
+                        Debug.Log("Else 2 walls. Visited weights = " + visited_weights);
 
                     }
                 }

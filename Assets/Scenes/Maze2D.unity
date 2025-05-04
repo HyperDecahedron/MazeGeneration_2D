@@ -534,7 +534,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 9.223032
+  orthographic size: 11.789202
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -559,7 +559,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.75, y: 4.61, z: -10}
+  m_LocalPosition: {x: 4.28, y: 6.65, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -30239,15 +30239,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mazeCellPrefab: {fileID: 8756343130032047651, guid: 1658181ab7b5565409b20a57d5488c29, type: 3}
-  mazeWidth: 10
-  mazeHeight: 8
+  mazeWidth: 20
+  mazeHeight: 20
   changeInRealTime: 0
   watchGrow: 0
-  waitSeconds: 0.1
-  watchHumanEvaluation: 1
+  waitSeconds: 0.2
+  watchHumanEvaluation: 0
   textHuman: {fileID: 729563390}
   textOptimal: {fileID: 2091957779}
-  difficulty: 2
+  difficulty: 0
 --- !u!4 &1364175834
 Transform:
   m_ObjectHideFlags: 0
