@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using TMPro;
 
 public class MazeGenerator2D : MonoBehaviour
 {
@@ -28,7 +29,11 @@ public class MazeGenerator2D : MonoBehaviour
     [SerializeField]
     private bool watchHumanEvaluation = false;
 
+    public TMP_Text textHuman;
+    public TMP_Text textOptimal;
+
     private MazeCell2D[,] mazeGrid;
+    private int[,] binaryMaze;
 
     public enum Difficulty
     {
@@ -102,7 +107,7 @@ public class MazeGenerator2D : MonoBehaviour
         else if (difficulty == Difficulty.Medium)
         {
             // Aldous-Broder
-            if(mazeWidth<9 && mazeHeight < 9)
+            if(mazeWidth<11 && mazeHeight < 9)
             {
                 StartCoroutine(GenerateMaze_AB());
             }
@@ -243,7 +248,6 @@ public class MazeGenerator2D : MonoBehaviour
 
         Debug.Log("Finished Aldous-Broder algorithm");
     }
-
 
     // Hard level: Recursive BackTracker (Deep First Search)---------------------------------------------------------------------------------------------
 
@@ -579,6 +583,9 @@ public class MazeGenerator2D : MonoBehaviour
     {
         // this function solves the maze as if it were a human.
 
+        // first, set the wall at the start active, to encapsulate the player
+        mazeGrid[0, mazeHeight - 1].leftWall.SetActive(true);
+
         GameObject player = GameObject.FindGameObjectWithTag("Player"); // find gameobject player with tag "Player"
 
         // set position of the player to be the same position as the mazeCell in mazeGrid[0, mazeHeight-1]
@@ -595,19 +602,19 @@ public class MazeGenerator2D : MonoBehaviour
         int quantityFreeWalls = 0;
 
         // Matrix of visited cells
-        bool[,] visited = new bool[mazeWidth, mazeHeight];
+        int[,] visited = new int[mazeWidth, mazeHeight];
         for (int x = 0; x < mazeWidth; x++)
         {
             for (int y = 0; y < mazeHeight; y++)
             {
-                visited[x, y] = false;
+                visited[x, y] = 0;
             }
         }
 
         while (!(player_x == (mazeWidth - 1) && player_y == 0))
         {
             if(watchHumanEvaluation)
-                yield return new WaitForSeconds(0.5f);
+                yield return new WaitForSeconds(0.1f);
 
             // Reset wall flags
             for (int i = 0; i < 4; i++) freeWalls[i] = false;
@@ -674,6 +681,8 @@ public class MazeGenerator2D : MonoBehaviour
                                 totalSteps++;
                             }
                         }
+
+                        Debug.Log("5a");
                     }
 
                     // 5b
@@ -705,11 +714,82 @@ public class MazeGenerator2D : MonoBehaviour
                                 totalSteps++;
                             }
                         }
+
+                        Debug.Log("5b");
                     }
 
                     else
                     {
-                        // RETURN TO PREVIOUS BRANCH NODE
+                        // in any other case, go to the cell that was less visited and that has freeWalls
+                        // get cell less visited
+
+                        int[] visited_weights = new int[] { 100000, 100000, 100000, 100000 }; // 0 left, 1 right, 2 top, 3 down
+
+                        if (freeWalls[1]) // right
+                        {
+                            visited_weights[1] = visited[player_x + 1, player_y];
+                        }
+                        
+                        if (freeWalls[3]) // down
+                        {
+                            visited_weights[3] = visited[player_x, player_y - 1];
+                        }
+
+                        if (freeWalls[0]) // left
+                        {
+                            visited_weights[0] = visited[player_x - 1, player_y];
+                        }
+
+                        if (freeWalls[2]) // up
+                        {
+                            visited_weights[2] = visited[player_x, player_y + 1];
+                        }
+
+                        // Get index of the smaller weight
+                        int minIndex = 0;
+                        int minValue = visited_weights[0];
+
+                        for (int i = 1; i < visited_weights.Length; i++)
+                        {
+                            if (visited_weights[i] < minValue)
+                            {
+                                minValue = visited_weights[i];
+                                minIndex = i;
+                            }
+                        }
+
+                        // Go to the cell with smaller weight
+
+                        if (minIndex==1)
+                        {
+                            // move right
+                            player_x++;
+                            prevDir = 0; // prev pos to the left
+                            totalSteps++;
+                        }
+                        else if (minIndex == 3)
+                        {
+                            // move back
+                            player_y--;
+                            prevDir = 2; // prev pos to the front
+                            totalSteps++;
+                        }
+                        else if (minIndex == 2)
+                        {
+                            // move front 
+                            player_y++;
+                            prevDir = 3; // prev pos to the back
+                            totalSteps++;
+                        }
+                        else if (minIndex == 0)
+                        {
+                            // move left
+                            player_x--;
+                            prevDir = 1; // prev pos to the right
+                            totalSteps++;
+                        }
+
+                        Debug.Log("Else 3 walls");
                     }
                 }
                 
@@ -737,6 +817,8 @@ public class MazeGenerator2D : MonoBehaviour
                             prevDir = 2; // prev pos to the front
                             totalSteps++;
                         }
+
+                        Debug.Log("1a");
                     }
 
                     // 1b
@@ -758,6 +840,8 @@ public class MazeGenerator2D : MonoBehaviour
                             prevDir = 1; // prev pos to the right
                             totalSteps++;
                         }
+
+                        Debug.Log("1b");
                     }
 
                     // 2a
@@ -779,6 +863,8 @@ public class MazeGenerator2D : MonoBehaviour
                             prevDir = 0; // prev pos to the left
                             totalSteps++;
                         }
+
+                        Debug.Log("2a");
                     }
 
                     // 2b
@@ -800,6 +886,8 @@ public class MazeGenerator2D : MonoBehaviour
                             prevDir = 3; // prev pos to the back
                             totalSteps++;
                         }
+
+                        Debug.Log("2b");
                     }
 
                     // 3a
@@ -821,6 +909,8 @@ public class MazeGenerator2D : MonoBehaviour
                             prevDir = 3; // prev pos to the back
                             totalSteps++;
                         }
+
+                        Debug.Log("3a");
                     }
 
                     // 3b
@@ -842,6 +932,8 @@ public class MazeGenerator2D : MonoBehaviour
                             prevDir = 1; // prev pos to the right
                             totalSteps++;
                         }
+
+                        Debug.Log("3b");
                     }
 
                     // 4a
@@ -863,6 +955,8 @@ public class MazeGenerator2D : MonoBehaviour
                             prevDir = 3; // prev pos to the back
                             totalSteps++;
                         }
+
+                        Debug.Log("4a");
                     }
 
                     // 4b
@@ -884,34 +978,74 @@ public class MazeGenerator2D : MonoBehaviour
                             prevDir = 1; // prev pos to the right
                             totalSteps++;
                         }
+
+                        Debug.Log("4b");
                     }
 
                     else
                     {
-                        // in any other case, go to the cell that was not visited and that has freeWalls
+                        // in any other case, go to the cell that was less visited and that has freeWalls
+                        // get cell less visited
 
-                        if (freeWalls[1] && !visited[player_x + 1, player_y])
+                        int[] visited_weights = new int[] { 100000, 100000, 100000, 100000 }; // 0 left, 1 right, 2 top, 3 down
+
+                        if (freeWalls[1]) // right
+                        {
+                            visited_weights[1] = visited[player_x + 1, player_y];
+                        }
+
+                        if (freeWalls[3]) // down
+                        {
+                            visited_weights[3] = visited[player_x, player_y - 1];
+                        }
+
+                        if (freeWalls[0]) // left
+                        {
+                            visited_weights[0] = visited[player_x - 1, player_y];
+                        }
+
+                        if (freeWalls[2]) // up
+                        {
+                            visited_weights[2] = visited[player_x, player_y + 1];
+                        }
+
+                        // Get index of the smaller weight
+                        int minIndex = 0;
+                        int minValue = visited_weights[0];
+
+                        for (int i = 1; i < visited_weights.Length; i++)
+                        {
+                            if (visited_weights[i] < minValue)
+                            {
+                                minValue = visited_weights[i];
+                                minIndex = i;
+                            }
+                        }
+
+                        // Go to the cell with smaller weight
+
+                        if (minIndex == 1)
                         {
                             // move right
                             player_x++;
                             prevDir = 0; // prev pos to the left
                             totalSteps++;
                         }
-                        else if (freeWalls[3] && !visited[player_x, player_y - 1])
+                        else if (minIndex == 3)
                         {
                             // move back
                             player_y--;
                             prevDir = 2; // prev pos to the front
                             totalSteps++;
                         }
-                        else if (freeWalls[2] && !visited[player_x, player_y + 1])
+                        else if (minIndex == 2)
                         {
                             // move front 
                             player_y++;
                             prevDir = 3; // prev pos to the back
                             totalSteps++;
                         }
-                        else if (freeWalls[0] && !visited[player_x - 1, player_y])
+                        else if (minIndex == 0)
                         {
                             // move left
                             player_x--;
@@ -919,37 +1053,8 @@ public class MazeGenerator2D : MonoBehaviour
                             totalSteps++;
                         }
 
-                        // if all cells were visited, just go to the one that is open
-                        
-                        else if (freeWalls[1] && player_x < mazeWidth - 1)
-                        {
-                            // move right
-                            player_x++;
-                            prevDir = 0; // prev pos to the left
-                            totalSteps++;
-                        }
-                        else if (freeWalls[3] && player_y > 0)
-                        {
-                            // move back
-                            player_y--;
-                            prevDir = 2; // prev pos to the front
-                            totalSteps++;
-                        }
-                        else if (freeWalls[2] && player_y < mazeHeight - 1)
-                        {
-                            // move front 
-                            player_y++;
-                            prevDir = 3; // prev pos to the back
-                            totalSteps++;
-                        }
-                        else if (freeWalls[0] && player_x > 0)
-                        {
-                            // move left
-                            player_x--;
-                            prevDir = 1; // prev pos to the right
-                            totalSteps++;
-                        }
-                       
+                        Debug.Log("Else 2 walls");
+
                     }
                 }
                 
@@ -984,6 +1089,8 @@ public class MazeGenerator2D : MonoBehaviour
                         prevDir = 2; // prev pos to the front
                         totalSteps++;
                     }
+
+                    Debug.Log("One free wall");
                 }
 
             }
@@ -1019,19 +1126,115 @@ public class MazeGenerator2D : MonoBehaviour
                     totalSteps++;
                 }
 
+                Debug.Log("Zero free walls");
+
             }
 
             // update player's position to the position of the cell in the mazeGrid[player_x, player_y]
             player.transform.position = mazeGrid[player_x, player_y].tfCenter.transform.position;
-            visited[player_x, player_y] = true;
+            visited[player_x, player_y]++;
         }
 
-        Debug.Log("Maze completed. Total steps = " + totalSteps);
+        totalSteps = totalSteps * 2;
+
+        //Debug.Log("Maze completed. Total steps = " + totalSteps);
+        textHuman.text = "Human steps: " + totalSteps;
+
+        // return entrance back to normal
+        mazeGrid[0, mazeHeight - 1].leftWall.SetActive(false);
+
+        // Now ge the shortest path in the maze
+        Vector2Int start = new Vector2Int(0, mazeHeight-1);
+        Vector2Int end = new Vector2Int(mazeWidth-1, 0);
+
+        RunOptimalEvaluation(start, end);
+    }
+
+    private void RunOptimalEvaluation(Vector2Int start, Vector2Int end)
+    {
+        // this function obtains the shortest path from the start to the end point
+        // first I need to convert the maze into a binary representation
+        CreateBinaryRepresentation();
+
+        // then use A* to solve it
+        int steps = AStarSolver.GetShortestPathLength(binaryMaze);
+        textOptimal.text = "Optimal steps: " + steps;
+    }
+    
+    private void CreateBinaryRepresentation()
+    {
+        int binaryWidth = mazeWidth * 2 + 1;
+        int binaryHeight = mazeHeight * 2 + 1;
+        int[,] binaryMazeEx = new int[binaryWidth, binaryHeight]; // binary maze expanded with walls
+
+        // Initialize all cells to wall
+        for (int x = 0; x < binaryWidth; x++)
+        {
+            for (int y = 0; y < binaryHeight; y++)
+            {
+                binaryMazeEx[x, y] = 0;
+            }
+        }
+
+        // Carve out paths
+        for (int x = 0; x < mazeWidth; x++)
+        {
+            for (int y = 0; y < mazeHeight; y++)
+            {
+                int bx = x * 2 + 1;
+                int by = y * 2 + 1;
+
+                binaryMazeEx[bx, by] = 1; // Center of the cell is open
+
+                MazeCell2D cell = mazeGrid[x, y];
+
+                if (!cell.frontWall.activeSelf) binaryMazeEx[bx, by + 1] = 1;
+                if (!cell.backWall.activeSelf) binaryMazeEx[bx, by - 1] = 1;
+                if (!cell.leftWall.activeSelf) binaryMazeEx[bx - 1, by] = 1;
+                if (!cell.rightWall.activeSelf) binaryMazeEx[bx + 1, by] = 1;
+            }
+        }
+
+        // remove walls from the boundaries
+        // remove upper, bottom right and left wall from binaryMazeEx and store it in binaryMaze (global variable)
+        int trimmedWidth = binaryWidth - 2;
+        int trimmedHeight = binaryHeight - 2;
+        binaryMaze = new int[trimmedWidth, trimmedHeight];
+
+        for (int x = 1; x < binaryWidth - 1; x++)
+        {
+            for (int y = 1; y < binaryHeight - 1; y++)
+            {
+                binaryMaze[x - 1, y - 1] = binaryMazeEx[x, y];
+            }
+        }
+
+        //string maze = BinaryMazeToString(binaryMaze);
+        //Debug.Log(maze);
+    }
+
+    private string BinaryMazeToString(int[,] binaryMaze)
+    {
+        int width = binaryMaze.GetLength(0);
+        int height = binaryMaze.GetLength(1);
+        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+
+        for (int y = height - 1; y >= 0; y--) // Print top to bottom
+        {
+            for (int x = 0; x < width; x++)
+            {
+                sb.Append(binaryMaze[x, y]);
+            }
+            sb.AppendLine();
+        }
+
+        return sb.ToString();
     }
 
 
-    // TO DO: DEBUG && FINISH THE ELSE IN THE CASE WITH 3 FREE WALLS AS IN THE 2 FREE WALLS
-    // REDUCE AND COMPACT THE CODE
-    // Y HACER LO DE QUE SI ESTÁ A MENOS DE 5 CASILLAS DE LA SALIDA Y HAY CAMINO DIRECTO QUE VAYA HACIA ALLÍ
+    // RELEVANTE: 
+    // QUE COJA LA OPCIÓN QUE MENOS HA VISITADO
 
+    // No tan relevante:
+    //AÑADIR LO DE QUE SI LLEGA CERCA DE LA SALIDA VAYA DIRECTAMENTE
 }
