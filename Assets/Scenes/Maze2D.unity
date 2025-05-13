@@ -288,7 +288,7 @@ Transform:
   m_GameObject: {fileID: 229953911}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -11.56, y: -3.84, z: -0.020898534}
+  m_LocalPosition: {x: -7.89, y: 15.54, z: -0.020898534}
   m_LocalScale: {x: 2.2, y: 2.2, z: 2.2}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -30239,11 +30239,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mazeCellPrefab: {fileID: 8756343130032047651, guid: 1658181ab7b5565409b20a57d5488c29, type: 3}
-  mazeWidth: 20
-  mazeHeight: 20
+  mazeWidth: 10
+  mazeHeight: 10
   changeInRealTime: 0
   watchGrow: 0
-  waitSeconds: 0.2
+  waitSeconds: 0.1
   watchHumanEvaluation: 0
   textHuman: {fileID: 729563390}
   textOptimal: {fileID: 2091957779}

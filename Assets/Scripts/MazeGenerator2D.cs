@@ -50,23 +50,6 @@ public class MazeGenerator2D : MonoBehaviour
     {
         // Initializa Maze at the start
         InitializeMaze();
-
-        // If the option change in real time is set to true, start changing after 3 seconds.
-        if (changeInRealTime)
-        {
-            // clear all visited cells
-            for (int x = 0; x < mazeWidth; x++)
-            {
-                for (int y = 0; y < mazeHeight; y++)
-                {
-                    mazeGrid[x, y].UnVisit();
-                }
-            }
-
-            // wait 3 seconds for the degeneration
-            StartCoroutine(WaitSeconds());
-        }
-
     }
 
     public void InitializeMaze()
@@ -125,6 +108,7 @@ public class MazeGenerator2D : MonoBehaviour
         // Add entrance and exit to the maze
         mazeGrid[0, mazeHeight - 1].ClearLeftWall();
         mazeGrid[mazeWidth - 1, 0].ClearRightWall();
+
     }
 
     // Easy level: Binary Tree --------------------------------------------------------------------------------------------------------------------------
@@ -182,6 +166,15 @@ public class MazeGenerator2D : MonoBehaviour
 
         // Visit last cell
         mazeGrid[mazeWidth - 1, 0].Visit();
+
+        Debug.Log("Finished Binary Tree algorithm");
+
+        // If the option change in real time is set to true, start changing after 3 seconds.
+        if (changeInRealTime)
+        {
+            StartCoroutine(WaitSeconds(3f)); // the player has 3 seconds to start moving before the degeneration occurs 
+        }
+
     }
 
     // Medium level: Aldous-Broder ----------------------------------------------------------------------------------------------------------------------
@@ -247,6 +240,12 @@ public class MazeGenerator2D : MonoBehaviour
         }
 
         Debug.Log("Finished Aldous-Broder algorithm");
+
+        // If the option change in real time is set to true, start changing after 3 seconds.
+        if (changeInRealTime)
+        {
+            StartCoroutine(WaitSeconds(3f)); // the player has 3 seconds to start moving before the degeneration occurs 
+        }
     }
 
     // Hard level: Recursive BackTracker (Deep First Search)---------------------------------------------------------------------------------------------
@@ -392,7 +391,8 @@ public class MazeGenerator2D : MonoBehaviour
 
     private void StartChange()
     {
-        StartCoroutine(GenerateChange(null, null, mazeGrid[mazeWidth - 1, mazeHeight - 1]));
+        //StartCoroutine(GenerateChange(null, null, mazeGrid[mazeWidth - 1, mazeHeight - 1]));
+        StartCoroutine(GenerateChange(null, null, mazeGrid[mazeWidth - 1, 0]));
     }
 
     private IEnumerator GenerateChange(MazeCell2D previousCell2, MazeCell2D previousCell, MazeCell2D currentCell)
@@ -564,11 +564,21 @@ public class MazeGenerator2D : MonoBehaviour
         return position;
     }
 
-    private IEnumerator WaitSeconds()
+    private IEnumerator WaitSeconds(float seconds)
     {
         Debug.Log("Waiting...");
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(seconds);
         Debug.Log("Starting change");
+
+        // clear all visited cells
+        for (int x = 0; x < mazeWidth; x++)
+        {
+            for (int y = 0; y < mazeHeight; y++)
+            {
+                mazeGrid[x, y].UnVisit();
+            }
+        }
+
         StartChange();
     }
 
@@ -1245,10 +1255,4 @@ public class MazeGenerator2D : MonoBehaviour
         return sb.ToString();
     }
 
-
-    // RELEVANTE: 
-    // QUE COJA LA OPCIÓN QUE MENOS HA VISITADO
-
-    // No tan relevante:
-    //AÑADIR LO DE QUE SI LLEGA CERCA DE LA SALIDA VAYA DIRECTAMENTE
 }
