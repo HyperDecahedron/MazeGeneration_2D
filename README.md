@@ -13,6 +13,8 @@ Welcome to **Maze Generator 2D**!
 
 This project provides a procedural maze generator and difficulty evaluator. Create your own mazes and evaluate how challenging they are!
 
+Watch a video about the project [in this link](https://youtu.be/qKsdUqLpXyM)
+
 ---
 
 ## 🚀 First Steps
