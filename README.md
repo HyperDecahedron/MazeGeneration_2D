@@ -1,5 +1,14 @@
 # 🌱 Maze Generator 2D
 
+<table>
+  <tr>
+    <td><img src="real time 1.png" width="200"/></td>
+    <td><img src="real time 2.png" width="200"/></td>
+    <td><img src="real time 3.png" width="200"/></td>
+    <td><img src="real time 4.png" width="200"/></td>
+  </tr>
+</table>
+
 Welcome to **Maze Generator 2D**!
 
 This project provides a procedural maze generator and difficulty evaluator. Create your own mazes and evaluate how challenging they are!
